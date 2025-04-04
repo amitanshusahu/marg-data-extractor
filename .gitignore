@@ -1,0 +1,17 @@
+# Virtual environment directory (if using venv)
+venv/
+
+# Byte-compiled Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Logs and local environment files
+*.log
+.env
+*.sqlite3  # Ignore SQLite database files if used
+
+# Cache files
+pip-wheel-metadata/
+*.egg-info/
