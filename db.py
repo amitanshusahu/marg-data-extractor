@@ -49,8 +49,3 @@ def retry_unsent():
         conn.close()
 
         time.sleep(30)  # Wait before next retry
-
-
-#import threading
-
-#threading.Thread(target=retry_unsent, daemon=True).start()
