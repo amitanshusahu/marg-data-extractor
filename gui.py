@@ -4,12 +4,18 @@ from PIL import Image, ImageTk
 import threading
 import os
 import platform
-
 from db import save_to_db
 
 if platform.system() == "Windows":
     import win32print
     import win32api
+    import winsound
+
+def play_notification_sound():
+    if platform.system() == "Windows":
+        winsound.MessageBeep()
+    else:
+        print("🔇 Skipping beep: Not on Windows.")
 
 def get_printer_list():
     if platform.system() != "Windows":
@@ -20,33 +26,47 @@ def print_pdf(pdf_path, printer_name):
     if not os.path.exists(pdf_path):
         raise FileNotFoundError(f"PDF file not found: {pdf_path}")
 
-    print(f"Sending to printer: {printer_name}")
-    print(f"File: {pdf_path}")
+    print(f"Attempting to print PDF: {pdf_path}")
+    print(f"Target printer: {printer_name}")
 
-    win32api.ShellExecute(
-        0,
-        "print",
-        pdf_path,
-        f'/d:"{printer_name}"',
-        ".",
-        0
-    )
+    try:
+        win32api.ShellExecute(
+            0,
+            "print",
+            pdf_path,
+            f'/d:"{printer_name}"',
+            ".",
+            0
+        )
+        print("Print job sent successfully.")
+    except Exception as e:
+        print(f"[Warning] Printing failed: {e}")
+        print("Falling back to opening the file instead.")
+        try:
+            os.startfile(pdf_path)
+        except Exception as open_err:
+            print(f"[Error] Failed to open file as fallback: {open_err}")
+
 
 def confirm(pdf_path, bill_text, printer_name, root):
-    save_to_db(bill_text)
     print_pdf(pdf_path, printer_name)
     root.destroy()
 
 def cancel(root):
-    print("🚫 Data NOT saved or printed.")
+    print("🚫 Print Cancled.")
     root.destroy()
 
 def show_bill_popup(pdf_path, bill_text):
     def run():
+        play_notification_sound()
         root = tk.Tk()
         root.title("🧾 Nexus Print Watcher")
         root.geometry("580x500")
         root.configure(bg="#F0F8FF")
+
+        root.attributes("-topmost", True)
+        root.lift()
+        root.focus_force()
 
         try:
             logo_img = Image.open("logo.png").resize((192, 62))
@@ -75,12 +95,12 @@ def show_bill_popup(pdf_path, bill_text):
         button_frame = tk.Frame(root, bg="#F0F8FF")
         button_frame.pack(pady=15)
 
-        save_button = tk.Button(
-            button_frame, text="✔ Save & Print",
+        print_button = tk.Button(
+            button_frame, text="✔ Print ",
             command=lambda: confirm(pdf_path, bill_text, selected_printer.get(), root),
             fg="white", bg="#2563EB", width=15
         )
-        save_button.pack(side=tk.LEFT, padx=15)
+        print_button.pack(side=tk.LEFT, padx=15)
 
         cancel_button = tk.Button(
             button_frame, text="✘ Cancel",
@@ -90,5 +110,7 @@ def show_bill_popup(pdf_path, bill_text):
         cancel_button.pack(side=tk.RIGHT, padx=15)
 
         root.mainloop()
+
+    save_to_db(bill_text)
 
     threading.Thread(target=run, daemon=True).start()
