@@ -4,9 +4,9 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from pdf_processing import extract_text_from_pdf
 from gui import show_bill_popup
-from config import PDF_DIR
+from config import PDF_DIR, processed_files
 
-processed_files = set()
+
 
 class PDFHandler(FileSystemEventHandler):
     def on_created(self, event):

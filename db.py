@@ -1,7 +1,7 @@
 import requests
 import sqlite3
 import time
-from config import DB_FILE, API_ENDPOINT
+from config import DB_FILE, API_ENDPOINT, processed_files
 
 def initialize_db():
     conn = sqlite3.connect(DB_FILE)
@@ -24,6 +24,7 @@ def save_to_db(bill_text):
     conn.commit()
     conn.close()
     print("✅ Data saved to database.")
+    processed_files = set()
 
 
 def retry_unsent():
