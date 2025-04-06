@@ -24,6 +24,7 @@ def save_to_db(bill_text):
     conn.commit()
     conn.close()
     print("✅ Data saved to database.")
+    # TODO: check how to empty a set
     processed_files = set()
 
 
