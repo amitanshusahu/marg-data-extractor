@@ -1,7 +1,7 @@
 import requests
 import sqlite3
 import time
-from config import DB_FILE, API_ENDPOINT, processed_files
+from config import DB_FILE, API_ENDPOINT
 
 def initialize_db():
     conn = sqlite3.connect(DB_FILE)
@@ -17,15 +17,13 @@ def initialize_db():
     conn.commit()
     conn.close()
 
-def save_to_db(bill_text):
+def save_to_db(bill_text, pdf_path):
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     cursor.execute("INSERT INTO bills (content) VALUES (?)", (bill_text,))
     conn.commit()
     conn.close()
-    print("✅ Data saved to database.")
-    # TODO: check how to empty a set
-    processed_files = set()
+    print("✅ Data saved to local database.")
 
 
 def retry_unsent():
@@ -43,7 +41,7 @@ def retry_unsent():
                     cursor.execute("UPDATE bills SET sent_at = CURRENT_TIMESTAMP WHERE id = ?", (row_id,))
                     print(f"✅ Bill ID {row_id} synced with server.")
                 else:
-                    print(f"❌ Failed to sync bill ID {row_id}: {response.status_code}")
+                    print(f"❌ Failed to sync bill ID {row_id}: {response.status_code}, {response.json()}")
             except Exception as e:
                 print(f"⚠️ Network/API error for bill ID {row_id}: {e}")
 

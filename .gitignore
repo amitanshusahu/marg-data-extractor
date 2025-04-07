@@ -17,3 +17,5 @@ pip-wheel-metadata/
 *.egg-info/
 
 *.db
+dist/
+build/
