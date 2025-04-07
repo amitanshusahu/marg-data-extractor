@@ -17,7 +17,5 @@ PDF_DIR.mkdir(parents=True, exist_ok=True)  # make sure it exists
 API_ENDPOINT = "https://wekeyar-dashboard.onrender.com/api/upload/daily/bill"
 
 
-logger.info(f"📂 PDF directory: {PDF_DIR}")
-logger.info(f"🗃️  Database file: {DB_FILE}")
 print(f"📂 PDF directory: {PDF_DIR}")
 print(f"🗃️  Database file: {DB_FILE}")

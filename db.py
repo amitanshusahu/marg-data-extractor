@@ -2,6 +2,7 @@ import requests
 import sqlite3
 import time
 from config import DB_FILE, API_ENDPOINT
+from log_setup import logger
 
 def initialize_db():
     conn = sqlite3.connect(DB_FILE)
@@ -27,6 +28,8 @@ def save_to_db(bill_text, pdf_path):
 
 
 def retry_unsent():
+    print("✅ Network Queue Started")
+    logger.info("Network Queue Started")
     while True:
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
@@ -40,8 +43,10 @@ def retry_unsent():
                 if response.status_code == 200:
                     cursor.execute("UPDATE bills SET sent_at = CURRENT_TIMESTAMP WHERE id = ?", (row_id,))
                     print(f"✅ Bill ID {row_id} synced with server.")
+                    logger.info(f"Bill ID {row_id} synced with server.")
                 else:
                     print(f"❌ Failed to sync bill ID {row_id}: {response.status_code}, {response.json()}")
+                    logger.error(f"Failed to sync bill ID {row_id}: {response.status_code}, {response.json()}")
             except Exception as e:
                 print(f"⚠️ Network/API error for bill ID {row_id}: {e}")
 
