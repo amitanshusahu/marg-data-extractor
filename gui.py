@@ -42,9 +42,7 @@ def handel_bill(pdf_path, bill_text):
     play_notification_sound()
     save_to_db(bill_text, pdf_path)
     config = load_config()
-    if config["ask_before_print"]:
-        open_pdf(pdf_path)
-    elif config["auto_print"]:
+    if config["auto_print"]:
         if config["printer"]:
             silent_print(pdf_path, config["printer"])
         else:

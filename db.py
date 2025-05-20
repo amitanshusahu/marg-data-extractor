@@ -3,6 +3,7 @@ import sqlite3
 import time
 from config import DB_FILE, API_ENDPOINT
 from log_setup import logger
+from settings_gui import load_config
 
 def initialize_db():
     conn = sqlite3.connect(DB_FILE)
@@ -34,12 +35,16 @@ def retry_unsent():
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
 
-        cursor.execute("SELECT id, content FROM bills WHERE sent_at IS NULL LIMIT 10")
+        cursor.execute("SELECT id, content, timestamp FROM bills WHERE sent_at IS NULL LIMIT 10")
         rows = cursor.fetchall()
 
-        for row_id, content in rows:
+        for row_id, content, timestamp in rows:
             try:
-                response = requests.post(API_ENDPOINT, json={"bill": content}, timeout=10)
+                payload = {
+                    "bill": content,
+                    "timestamp": timestamp
+                }
+                response = requests.post(API_ENDPOINT, json=payload, timeout=10)
                 if response.status_code == 200:
                     cursor.execute("UPDATE bills SET sent_at = CURRENT_TIMESTAMP WHERE id = ?", (row_id,))
                     print(f"✅ Bill ID {row_id} synced with server.")
@@ -49,8 +54,10 @@ def retry_unsent():
                     logger.error(f"Failed to sync bill ID {row_id}: {response.status_code}, {response.json()}")
             except Exception as e:
                 print(f"⚠️ Network/API error for bill ID {row_id}: {e}")
+                logger.exception(f"Network/API error for bill ID {row_id}: {e}")
 
         conn.commit()
         conn.close()
 
-        time.sleep(30)  # Wait before next retry
+        config = load_config()
+        time.sleep(config["retry_request_time"])
