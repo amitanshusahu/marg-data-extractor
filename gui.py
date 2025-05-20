@@ -51,3 +51,5 @@ def handel_bill(pdf_path, bill_text):
                 silent_print(pdf_path, printerName)
             else:
                 logger.error(f"[Error] No matching printer found")
+    else:
+        open_pdf(pdf_path)
