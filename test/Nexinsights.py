@@ -77,7 +77,7 @@ def cancel(pdf_path, root):
     root.destroy()
 
 
-def show_bill_popup(pdf_path, bill_text):
+def handel_bill(pdf_path, bill_text):
     """Show extracted print job details in a GUI popup with a modern UI & images."""
     def run():
         root = tk.Tk()
@@ -165,7 +165,7 @@ class PDFHandler(FileSystemEventHandler):
                 
 
                 processed_files.add(pdf_path)  # Mark as processed
-                show_bill_popup(pdf_path, extracted_text)
+                handel_bill(pdf_path, extracted_text)
 
 def monitor_folder():
     

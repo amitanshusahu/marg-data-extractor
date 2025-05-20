@@ -3,11 +3,8 @@ from collections import defaultdict
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from pdf_processing import extract_text_from_pdf
-from gui import show_bill_popup
+from gui import handel_bill
 from config import PDF_DIR
-
-# just to prevent duplicates
-processed_files = set()
 
 # Tracks last event time for each file to debounce multiple triggers
 file_event_times = defaultdict(float)
@@ -42,8 +39,7 @@ class PDFHandler(FileSystemEventHandler):
         extracted_text = extract_text_from_pdf(path)
 
         if extracted_text.strip():
-            processed_files.add(path)
-            show_bill_popup(path, extracted_text)
+            handel_bill(path, extracted_text)
 
     def on_created(self, event):
         if not event.is_directory:
@@ -58,7 +54,6 @@ def monitor_folder():
     observer = Observer()
     observer.schedule(PDFHandler(), PDF_DIR, recursive=False)
     observer.start()
-    print(f"👀 Monitoring {PDF_DIR} for new or updated PDFs...")
 
     try:
         while True:

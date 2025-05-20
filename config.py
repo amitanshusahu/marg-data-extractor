@@ -6,6 +6,9 @@ from log_setup import logger
 APP_DATA_DIR = Path(os.getenv("LOCALAPPDATA", os.getcwd())) / "NexInsights"
 APP_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
+# config file path
+CONFIG_FILE = APP_DATA_DIR / "config.json"
+
 # Database path
 DB_FILE = APP_DATA_DIR / "bills.db"
 

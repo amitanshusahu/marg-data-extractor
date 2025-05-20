@@ -6,7 +6,8 @@ from pystray import MenuItem as item
 from PIL import Image
 from safe_path import resource_path
 from autostartup import add_to_startup
-import sys
+import sys 
+from settings_gui import open_settings
 
 if '--autorun' in sys.argv:
     add_to_startup()
@@ -30,6 +31,7 @@ def run_tray():
     icon = pystray.Icon("FileMonitor")
     icon.icon = create_image()
     icon.menu = pystray.Menu(
+        item('Settings', lambda icon, item: open_settings()),
         item('Quit', on_quit)
     )
     setup()
