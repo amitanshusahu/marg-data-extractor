@@ -27,11 +27,25 @@ def save_to_db(bill_text, pdf_path):
     conn.close()
     print("✅ Data saved to local database.")
 
+def is_online():
+    try:
+        requests.head("https://1.1.1.1", timeout=5)
+        return True
+    except requests.RequestException:
+        return False
 
 def retry_unsent():
     print("✅ Network Queue Started")
     logger.info("Network Queue Started")
+
+    previous_error_response = None
+
     while True:
+        if not is_online():
+            print("⚠️ Offline. Skipping sync cycle.")
+            time.sleep(load_config()["retry_request_time"])
+            continue
+
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
 
@@ -49,12 +63,20 @@ def retry_unsent():
                     cursor.execute("UPDATE bills SET sent_at = CURRENT_TIMESTAMP WHERE id = ?", (row_id,))
                     print(f"✅ Bill ID {row_id} synced with server.")
                     logger.info(f"Bill ID {row_id} synced with server.")
+                    previous_error_response = None
                 else:
-                    print(f"❌ Failed to sync bill ID {row_id}: {response.status_code}, {response.json()}")
-                    logger.error(f"Failed to sync bill ID {row_id}: {response.status_code}, {response.json()}")
+                    current_error = f"{response.status_code}, {response.json()}"
+                    if current_error != previous_error_response:
+                        print(f"❌ Failed to sync bill ID {row_id}: {current_error}")
+                        logger.error(f"Failed to sync bill ID {row_id}: {current_error}")
+                        previous_error_response = current_error
+
             except Exception as e:
-                print(f"⚠️ Network/API error for bill ID {row_id}: {e}")
-                logger.exception(f"Network/API error for bill ID {row_id}: {e}")
+                current_error = str(e)
+                if current_error != previous_error_response:
+                    print(f"⚠️ Network/API error for bill ID {row_id}: {e}")
+                    logger.exception(f"Network/API error for bill ID {row_id}: {e}")
+                    previous_error_response = current_error
 
         conn.commit()
         conn.close()
