@@ -10,7 +10,8 @@ def load_config():
         return {
             "printer": "",
             "auto_print": True,
-            "retry_request_time": 120
+            "retry_request_time": 120,
+            "api_url": "https://wekeyar-dashboard.onrender.com/api/upload/daily/bill"
         }
     with open(CONFIG_FILE, 'r') as f:
         return json.load(f)
@@ -34,38 +35,63 @@ def open_settings():
         config["printer"] = printer_var.get()
         config["auto_print"] = auto_print_var.get()
         config["retry_request_time"] = retry_time
+        config["api_url"] = api_url_var.get()
         save_config(config)
         messagebox.showinfo("Settings", "Settings saved successfully.")
         settings_win.destroy()
 
+    # Window setup
     settings_win = tk.Tk()
-    settings_win.title("Nexinsight Settings")
-    settings_win.resizable(False, False)
-    settings_win.geometry("370x200")
+    settings_win.title("NexInsight Settings")
+    settings_win.geometry("400x260")
+    settings_win.configure(bg="#e6f2ff")  # Light blue background
 
-    pad = {'padx': 10, 'pady': 10}
+    style = ttk.Style()
+    style.theme_use("default")
+    style.configure("TNotebook", background="#e6f2ff", borderwidth=0)
+    style.configure("TNotebook.Tab", background="#cce6ff", padding=(10, 5))
+    style.map("TNotebook.Tab", background=[("selected", "#99ccff")])
+    style.configure("TLabel", background="#e6f2ff")
+    style.configure("TCheckbutton", background="#e6f2ff")
 
-    # PRINTER
-    tk.Label(settings_win, text="Select Printer:", anchor="w").grid(row=0, column=0, sticky="w", **pad)
+    notebook = ttk.Notebook(settings_win)
+    notebook.pack(expand=True, fill='both', padx=10, pady=10)
+
+    # General Tab
+    general_frame = ttk.Frame(notebook)
+    notebook.add(general_frame, text="General")
+
     printer_var = tk.StringVar(value=config.get("printer", ""))
     printers = [printer[2] for printer in win32print.EnumPrinters(2)]
-    printer_dropdown = ttk.Combobox(settings_win, textvariable=printer_var, values=printers, state="readonly")
-    printer_dropdown.grid(row=0, column=1, sticky="ew", **pad)
+    ttk.Label(general_frame, text="Select Printer:").grid(row=0, column=0, sticky="w", padx=10, pady=10)
+    printer_dropdown = ttk.Combobox(general_frame, textvariable=printer_var, values=printers, state="readonly")
+    printer_dropdown.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
 
-    # AUTO PRINT
     auto_print_var = tk.BooleanVar(value=config.get("auto_print", True))
-    auto_print_check = ttk.Checkbutton(settings_win, text="Print Automatically", variable=auto_print_var)
-    auto_print_check.grid(row=1, column=0, columnspan=2, sticky="w", **pad)
+    auto_print_check = ttk.Checkbutton(general_frame, text="Print Automatically", variable=auto_print_var)
+    auto_print_check.grid(row=1, column=0, columnspan=2, sticky="w", padx=10, pady=5)
 
-    # RETRY TIME
-    tk.Label(settings_win, text="Retry Time (seconds):", anchor="w").grid(row=2, column=0, sticky="w", **pad)
+    general_frame.columnconfigure(1, weight=1)
+
+    # Advanced Tab
+    advanced_frame = ttk.Frame(notebook)
+    notebook.add(advanced_frame, text="Advanced")
+
     retry_time_var = tk.StringVar(value=str(config.get("retry_request_time", 120)))
-    retry_time_entry = ttk.Entry(settings_win, textvariable=retry_time_var)
-    retry_time_entry.grid(row=2, column=1, sticky="ew", **pad)
+    api_url_var = tk.StringVar(value=config.get("api_url", ""))
 
-    # SAVE BUTTON
+    ttk.Label(advanced_frame, text="Retry Time (seconds):").grid(row=0, column=0, sticky="w", padx=10, pady=10)
+    retry_time_entry = ttk.Entry(advanced_frame, textvariable=retry_time_var)
+    retry_time_entry.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
+
+    ttk.Label(advanced_frame, text="API URL:").grid(row=1, column=0, sticky="w", padx=10, pady=10)
+    api_url_entry = ttk.Entry(advanced_frame, textvariable=api_url_var)
+    api_url_entry.grid(row=1, column=1, padx=10, pady=10, sticky="ew")
+
+    advanced_frame.columnconfigure(1, weight=1)
+
+    # Save Button
     save_button = ttk.Button(settings_win, text="Save", command=save_and_close)
-    save_button.grid(row=3, column=0, columnspan=2, pady=(0, 10))
+    save_button.pack(pady=(0, 10))
 
-    settings_win.columnconfigure(1, weight=1)
     settings_win.mainloop()
