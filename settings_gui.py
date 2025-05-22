@@ -40,20 +40,25 @@ def open_settings():
         messagebox.showinfo("Settings", "Settings saved successfully.")
         settings_win.destroy()
 
-    # Window setup
+    # Main Window
     settings_win = tk.Tk()
     settings_win.title("NexInsight Settings")
-    settings_win.geometry("400x260")
-    settings_win.configure(bg="#e6f2ff")  # Light blue background
+    settings_win.geometry("450x280")
+    settings_win.configure(bg="white")
 
+    # Style Setup
     style = ttk.Style()
-    style.theme_use("default")
-    style.configure("TNotebook", background="#e6f2ff", borderwidth=0)
-    style.configure("TNotebook.Tab", background="#cce6ff", padding=(10, 5))
-    style.map("TNotebook.Tab", background=[("selected", "#99ccff")])
-    style.configure("TLabel", background="#e6f2ff")
-    style.configure("TCheckbutton", background="#e6f2ff")
+    style.theme_use("clam")  # Clean base theme
+    style.configure("TNotebook", background="white", borderwidth=0)
+    style.configure("TNotebook.Tab", background="#f2f2f2", padding=(10, 5), font=("Segoe UI", 10))
+    style.map("TNotebook.Tab", background=[("selected", "#ffffff")])
+    style.configure("TFrame", background="white")
+    style.configure("TLabel", background="white", font=("Segoe UI", 10))
+    style.configure("TCheckbutton", background="white", font=("Segoe UI", 10))
+    style.configure("TEntry", padding=5)
+    style.configure("TButton", font=("Segoe UI", 10, "bold"))
 
+    # Notebook
     notebook = ttk.Notebook(settings_win)
     notebook.pack(expand=True, fill='both', padx=10, pady=10)
 
@@ -78,7 +83,7 @@ def open_settings():
     notebook.add(advanced_frame, text="Advanced")
 
     retry_time_var = tk.StringVar(value=str(config.get("retry_request_time", 120)))
-    api_url_var = tk.StringVar(value=config.get("api_url", ""))
+    api_url_var = tk.StringVar(value=config.get("api_url", "https://wekeyar-dashboard.onrender.com/api/upload/daily/bill"))
 
     ttk.Label(advanced_frame, text="Retry Time (seconds):").grid(row=0, column=0, sticky="w", padx=10, pady=10)
     retry_time_entry = ttk.Entry(advanced_frame, textvariable=retry_time_var)
@@ -92,6 +97,6 @@ def open_settings():
 
     # Save Button
     save_button = ttk.Button(settings_win, text="Save", command=save_and_close)
-    save_button.pack(pady=(0, 10))
+    save_button.pack(pady=(5, 10))
 
     settings_win.mainloop()
