@@ -3,15 +3,23 @@ import ssl
 from email.message import EmailMessage
 from config import DB_FILE
 import os
+from plyer import notification
 
 # You can also store these in a secure config or encrypted vault
 SENDER_EMAIL = "varsada9@gmail.com"
 SENDER_PASSWORD = "wfojiixiirgbmsrg"
 RECEIVER_EMAIL = "amitansusahu@gmail.com"
 
+def notify(title, message):
+    notification.notify(
+        title=title,
+        message=message,
+        timeout=5  # seconds
+    )
+
 def send_db_via_gmail():
     if not os.path.exists(DB_FILE):
-        print("Database file not found.")
+        notify("NexInsights", "Database file not found.")
         return
 
     msg = EmailMessage()
@@ -30,6 +38,6 @@ def send_db_via_gmail():
         with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
             smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
             smtp.send_message(msg)
-        print("Database sent successfully via Gmail.")
+        notify("NexInsights", "Database sent successfully via Gmail.")
     except Exception as e:
-        print(f"Failed to send email: {e}")
+        notify("NexInsights - Email Error", f"Failed to send DB: {e}")
