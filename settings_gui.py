@@ -2,19 +2,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import json
 import os
-from config import CONFIG_FILE
+from config import CONFIG_FILE , load_config
 import win32print
-
-def load_config():
-    if not os.path.exists(CONFIG_FILE):
-        return {
-            "printer": "",
-            "auto_print": True,
-            "retry_request_time": 120,
-            "api_url": "https://wekeyar-dashboard.onrender.com/api/upload/daily/bill"
-        }
-    with open(CONFIG_FILE, 'r') as f:
-        return json.load(f)
 
 def save_config(config):
     with open(CONFIG_FILE, 'w') as f:
@@ -48,7 +37,7 @@ def open_settings():
 
     # Style Setup
     style = ttk.Style()
-    style.theme_use("clam")  # Clean base theme
+    style.theme_use("clam")
     style.configure("TNotebook", background="white", borderwidth=0)
     style.configure("TNotebook.Tab", background="#f2f2f2", padding=(10, 5), font=("Segoe UI", 10))
     style.map("TNotebook.Tab", background=[("selected", "#ffffff")])
@@ -67,7 +56,10 @@ def open_settings():
     notebook.add(general_frame, text="General")
 
     printer_var = tk.StringVar(value=config.get("printer", ""))
-    printers = [printer[2] for printer in win32print.EnumPrinters(2)]
+
+    flags = win32print.PRINTER_ENUM_LOCAL | win32print.PRINTER_ENUM_CONNECTIONS
+    printers = [printer[1] for printer in win32print.EnumPrinters(flags, None, 1)]
+
     ttk.Label(general_frame, text="Select Printer:").grid(row=0, column=0, sticky="w", padx=10, pady=10)
     printer_dropdown = ttk.Combobox(general_frame, textvariable=printer_var, values=printers, state="readonly")
     printer_dropdown.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
