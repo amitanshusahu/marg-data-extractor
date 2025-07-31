@@ -59,6 +59,7 @@ def retry_unsent():
                     "timestamp": timestamp
                 }
                 response = requests.post(API_ENDPOINT, json=payload, timeout=10)
+                print(f"Syncing bill ID {row_id}...", response)
                 if response.status_code == 200:
                     cursor.execute("UPDATE bills SET sent_at = CURRENT_TIMESTAMP WHERE id = ?", (row_id,))
                     print(f"✅ Bill ID {row_id} synced with server.")
