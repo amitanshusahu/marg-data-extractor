@@ -21,74 +21,89 @@ def open_settings():
             messagebox.showerror("Invalid Input", "Retry request time must be a positive integer.")
             return
 
+        config["store_name"] = store_name_var.get()
         config["printer"] = printer_var.get()
         config["auto_print"] = auto_print_var.get()
         config["retry_request_time"] = retry_time
         config["api_url"] = api_url_var.get()
         save_config(config)
-        messagebox.showinfo("Settings", "Settings saved successfully.")
+        messagebox.showinfo("Success", "Settings saved successfully.")
         settings_win.destroy()
 
     # Main Window
     settings_win = tk.Tk()
-    settings_win.title("NexInsight Settings")
-    settings_win.geometry("450x280")
-    settings_win.configure(bg="white")
+    settings_win.title("Nexinsights - Settings")
+    settings_win.geometry("500x450")
+    settings_win.configure(bg="#f5f5f5")
+    settings_win.resizable(False, False)
 
-    # Style Setup
-    style = ttk.Style()
-    style.theme_use("clam")
-    style.configure("TNotebook", background="white", borderwidth=0)
-    style.configure("TNotebook.Tab", background="#f2f2f2", padding=(10, 5), font=("Segoe UI", 10))
-    style.map("TNotebook.Tab", background=[("selected", "#ffffff")])
-    style.configure("TFrame", background="white")
-    style.configure("TLabel", background="white", font=("Segoe UI", 10))
-    style.configure("TCheckbutton", background="white", font=("Segoe UI", 10))
-    style.configure("TEntry", padding=5)
-    style.configure("TButton", font=("Segoe UI", 10, "bold"))
+    # Main Container
+    main_container = tk.Frame(settings_win, bg="#f5f5f5")
+    main_container.pack(fill='both', expand=True, padx=20, pady=20)
 
-    # Notebook
-    notebook = ttk.Notebook(settings_win)
-    notebook.pack(expand=True, fill='both', padx=10, pady=10)
+    # Content Frame with white background
+    content_frame = tk.Frame(main_container, bg="white", relief="flat", bd=0)
+    content_frame.pack(fill='both', expand=True)
 
-    # General Tab
-    general_frame = ttk.Frame(notebook)
-    notebook.add(general_frame, text="General")
-
+    # Variables
+    store_name_var = tk.StringVar(value=config.get("store_name", ""))
     printer_var = tk.StringVar(value=config.get("printer", ""))
+    auto_print_var = tk.BooleanVar(value=config.get("auto_print", True))
+    retry_time_var = tk.StringVar(value=str(config.get("retry_request_time", 600)))
+    api_url_var = tk.StringVar(value=config.get("api_url", "https://wekeyar.core.server.nexusinfotech.co/api/upload/daily/bill"))
 
+    # Get printers
     flags = win32print.PRINTER_ENUM_LOCAL | win32print.PRINTER_ENUM_CONNECTIONS
     printers = [printer[1] for printer in win32print.EnumPrinters(flags, None, 1)]
 
-    ttk.Label(general_frame, text="Select Printer:").grid(row=0, column=0, sticky="w", padx=10, pady=10)
-    printer_dropdown = ttk.Combobox(general_frame, textvariable=printer_var, values=printers, state="readonly")
-    printer_dropdown.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
+    # Store Name Field
+    tk.Label(content_frame, text="Store Name", font=("Segoe UI", 9), 
+            bg="white", fg="#666", anchor="w").pack(fill='x', padx=20, pady=(20, 5))
+    store_entry = tk.Entry(content_frame, textvariable=store_name_var, 
+                          font=("Segoe UI", 10), relief="solid", bd=1)
+    store_entry.pack(fill='x', padx=20, pady=(0, 15))
 
-    auto_print_var = tk.BooleanVar(value=config.get("auto_print", True))
-    auto_print_check = ttk.Checkbutton(general_frame, text="Print Automatically", variable=auto_print_var)
-    auto_print_check.grid(row=1, column=0, columnspan=2, sticky="w", padx=10, pady=5)
+    # Printer Field
+    tk.Label(content_frame, text="Printer", font=("Segoe UI", 9), 
+            bg="white", fg="#666", anchor="w").pack(fill='x', padx=20, pady=(0, 5))
+    printer_combo = ttk.Combobox(content_frame, textvariable=printer_var, 
+                                values=printers, state="readonly", font=("Segoe UI", 10))
+    printer_combo.pack(fill='x', padx=20, pady=(0, 15))
 
-    general_frame.columnconfigure(1, weight=1)
+    # Auto Print Checkbox
+    auto_print_check = tk.Checkbutton(content_frame, text="Enable automatic printing", 
+                                     variable=auto_print_var, font=("Segoe UI", 9), 
+                                     bg="white", fg="#333", selectcolor="white", 
+                                     activebackground="white", activeforeground="#007acc")
+    auto_print_check.pack(fill='x', padx=20, pady=(0, 15))
 
-    # Advanced Tab
-    advanced_frame = ttk.Frame(notebook)
-    notebook.add(advanced_frame, text="Advanced")
+    # Separator
+    separator = tk.Frame(content_frame, height=1, bg="#e0e0e0")
+    separator.pack(fill='x', padx=20, pady=10)
 
-    retry_time_var = tk.StringVar(value=str(config.get("retry_request_time", 120)))
-    api_url_var = tk.StringVar(value=config.get("api_url", "https://wekeyar.core.server.nexusinfotech.co/api/upload/daily/bill"))
+    # Retry Time Field
+    tk.Label(content_frame, text="Retry Time (seconds)", font=("Segoe UI", 9), 
+            bg="white", fg="#666", anchor="w").pack(fill='x', padx=20, pady=(0, 5))
+    retry_entry = tk.Entry(content_frame, textvariable=retry_time_var, 
+                          font=("Segoe UI", 10), relief="solid", bd=1)
+    retry_entry.pack(fill='x', padx=20, pady=(0, 15))
 
-    ttk.Label(advanced_frame, text="Retry Time (seconds):").grid(row=0, column=0, sticky="w", padx=10, pady=10)
-    retry_time_entry = ttk.Entry(advanced_frame, textvariable=retry_time_var)
-    retry_time_entry.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
+    # API URL Field
+    tk.Label(content_frame, text="API URL", font=("Segoe UI", 9), 
+            bg="white", fg="#666", anchor="w").pack(fill='x', padx=20, pady=(0, 5))
+    api_entry = tk.Entry(content_frame, textvariable=api_url_var, 
+                        font=("Segoe UI", 10), relief="solid", bd=1)
+    api_entry.pack(fill='x', padx=20, pady=(0, 20))
 
-    ttk.Label(advanced_frame, text="API URL:").grid(row=1, column=0, sticky="w", padx=10, pady=10)
-    api_url_entry = ttk.Entry(advanced_frame, textvariable=api_url_var)
-    api_url_entry.grid(row=1, column=1, padx=10, pady=10, sticky="ew")
-
-    advanced_frame.columnconfigure(1, weight=1)
+    # Button Frame
+    button_frame = tk.Frame(main_container, bg="#f5f5f5")
+    button_frame.pack(fill='x', pady=(6, 0))
 
     # Save Button
-    save_button = ttk.Button(settings_win, text="Save", command=save_and_close)
-    save_button.pack(pady=(5, 10))
+    save_button = tk.Button(button_frame, text="Save Settings", command=save_and_close,
+                           font=("Segoe UI", 10, "bold"), bg="#007acc", fg="white",
+                           relief="flat", padx=30, pady=10, cursor="hand2",
+                           activebackground="#005a9e", activeforeground="white")
+    save_button.pack()
 
     settings_win.mainloop()

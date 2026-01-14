@@ -12,6 +12,7 @@ CONFIG_FILE = APP_DATA_DIR / "config.json"
 def load_config():
     if not os.path.exists(CONFIG_FILE):
         return {
+            "store_name": "",
             "printer": "",
             "auto_print": True,
             "retry_request_time": 60*10,
