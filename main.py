@@ -9,7 +9,7 @@ from autostartup import add_to_startup
 import sys 
 from settings_gui import open_settings
 from db_manager_gui import open_db_manager
-from send_mail import send_db_via_gmail
+from send_mail import send_diagnosis_via_gmail
 from debug_gui import open_debug_gui
 
 if '--autorun' in sys.argv:
@@ -37,7 +37,7 @@ def run_tray():
         item('View Database', lambda icon, item: open_db_manager()),
         item('Settings', lambda icon, item: open_settings()),
         item('Debug', lambda icon, item: open_debug_gui()),
-        item('Send DB', lambda icon, item: threading.Thread(target=send_db_via_gmail, daemon=True).start()),
+        item('Send DB', lambda icon, item: threading.Thread(target=send_diagnosis_via_gmail, daemon=True).start()),
         item('Quit', on_quit)
     )
     setup()
