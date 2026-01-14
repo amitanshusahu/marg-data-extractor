@@ -49,38 +49,45 @@ def retry_unsent():
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
 
-        cursor.execute("SELECT id, content, timestamp FROM bills WHERE sent_at IS NULL LIMIT 10")
+        cursor.execute("SELECT id, content FROM bills WHERE sent_at IS NULL LIMIT 10")
         rows = cursor.fetchall()
 
-        for row_id, content, timestamp in rows:
+        if rows:
             try:
+                bill_ids = [row[0] for row in rows]
+                bill_contents = [row[1] for row in rows]
+                
                 payload = {
-                    "bill": content,
-                    "timestamp": timestamp
+                    "bills": bill_contents,
                 }
                 response = requests.post(API_ENDPOINT, json=payload, timeout=10)
-                print(f"Syncing bill ID {row_id}...", response)
+                print(f"Syncing {len(bill_ids)} bills (IDs: {bill_ids})...", response)
+                
                 if response.status_code == 200:
-                    cursor.execute("UPDATE bills SET sent_at = CURRENT_TIMESTAMP WHERE id = ?", (row_id,))
-                    print(f"✅ Bill ID {row_id} synced with server.")
-                    logger.info(f"Bill ID {row_id} synced with server.")
+                    placeholders = ','.join('?' * len(bill_ids))
+                    cursor.execute(f"UPDATE bills SET sent_at = CURRENT_TIMESTAMP WHERE id IN ({placeholders})", bill_ids)
+                    print(f"✅ {len(bill_ids)} bills synced with server.")
+                    logger.info(f"{len(bill_ids)} bills synced with server (IDs: {bill_ids}).")
                     previous_error_response = None
                 else:
                     current_error = f"{response.status_code}, {response.json()}"
                     if current_error != previous_error_response:
-                        print(f"❌ Failed to sync bill ID {row_id}: {current_error}")
-                        logger.error(f"Failed to sync bill ID {row_id}: {current_error}")
+                        print(f"❌ Failed to sync {len(bill_ids)} bills: {current_error}")
+                        logger.error(f"Failed to sync {len(bill_ids)} bills (IDs: {bill_ids}): {current_error}")
                         previous_error_response = current_error
 
             except Exception as e:
                 current_error = str(e)
                 if current_error != previous_error_response:
-                    print(f"⚠️ Network/API error for bill ID {row_id}: {e}")
-                    logger.exception(f"Network/API error for bill ID {row_id}: {e}")
+                    print(f"⚠️ Network/API error for bills: {e}")
+                    logger.exception(f"Network/API error for bills: {e}")
                     previous_error_response = current_error
 
         conn.commit()
         conn.close()
 
         config = load_config()
+        sleep_time = config.get("retry_request_time", 600)
+        if sleep_time < 600:
+            sleep_time = 600
         time.sleep(config["retry_request_time"])
