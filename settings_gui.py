@@ -75,7 +75,7 @@ def open_settings():
     notebook.add(advanced_frame, text="Advanced")
 
     retry_time_var = tk.StringVar(value=str(config.get("retry_request_time", 120)))
-    api_url_var = tk.StringVar(value=config.get("api_url", "https://wekeyar-dashboard.onrender.com/api/upload/daily/bill"))
+    api_url_var = tk.StringVar(value=config.get("api_url", "https://wekeyar.core.server.nexusinfotech.co/api/upload/daily/bill"))
 
     ttk.Label(advanced_frame, text="Retry Time (seconds):").grid(row=0, column=0, sticky="w", padx=10, pady=10)
     retry_time_entry = ttk.Entry(advanced_frame, textvariable=retry_time_var)

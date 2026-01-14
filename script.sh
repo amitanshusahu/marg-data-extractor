@@ -1,5 +1,5 @@
 # install dependency
-pip install pymupdf pillow watchdog requests pystray pywin32
+pip install pymupdf pillow watchdog requests pystray pywin32 plyer
 
 
 # build

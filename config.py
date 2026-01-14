@@ -14,8 +14,8 @@ def load_config():
         return {
             "printer": "",
             "auto_print": True,
-            "retry_request_time": 120,
-            "api_url": "https://wekeyar-marg-server-7oj85.ondigitalocean.app/api/upload/daily/bill"
+            "retry_request_time": 60*10,
+            "api_url": "https://wekeyar.core.server.nexusinfotech.co/api/upload/daily/bill"
         }
     with open(CONFIG_FILE, 'r') as f:
         return json.load(f)
