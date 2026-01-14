@@ -79,10 +79,12 @@ def send_diagnosis_via_gmail():
     report_lines.append("=" * 60)
     
     diagnosis_report = "\n".join(report_lines)
+
+    config = load_config()
     
     # Create email
     msg = EmailMessage()
-    msg['Subject'] = "NexInsights Diagnosis Report"
+    msg['Subject'] = f"NexInsights Diagnosis Report {config.get('store_name', 'Unknown Store')}"
     msg['From'] = SENDER_EMAIL
     msg['To'] = RECEIVER_EMAIL
     msg.set_content(diagnosis_report)
