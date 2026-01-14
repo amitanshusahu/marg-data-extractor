@@ -2,8 +2,8 @@
 
 [Setup]
 AppName=NexInsights
-AppVersion=1.0.0
-AppPublisher=NexSoft Solutions
+AppVersion=2.0.0
+AppPublisher=Nexusinfotech
 AppPublisherURL=https://nexusinfotech.co
 AppSupportURL=https://nexusinfotech.co
 AppUpdatesURL=https://nexusinfotech.co
@@ -21,13 +21,13 @@ WizardSmallImageFile=installer-assets\wizard-small.bmp
 SetupIconFile=installer-assets\setup-icon.ico
 LicenseFile=installer-assets\EULA.txt
 VersionInfoDescription=NexInsights Data Monitor
-VersionInfoCompany=NexSoft Solutions
+VersionInfoCompany=Nexusinfotech
 VersionInfoProductName=NexInsights
 VersionInfoVersion=1.0.0.0
 
 [Files]
-Source: "C:\Users\USER\Desktop\Code\marg-data-extractor\dist\NexInsights.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\USER\Desktop\Code\marg-data-extractor\dist\SumatraPDF-3.5.2-64.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Amitanshu Sahu\Desktop\Code\marg-data-extractor\dist\NexInsights.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Amitanshu Sahu\Desktop\Code\marg-data-extractor\dist\SumatraPDF-3.5.2-64.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\NexInsights"; Filename: "{app}\NexInsights.exe"

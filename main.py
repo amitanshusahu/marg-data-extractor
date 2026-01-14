@@ -37,7 +37,7 @@ def run_tray():
         item('View Database', lambda icon, item: open_db_manager()),
         item('Settings', lambda icon, item: open_settings()),
         item('Debug', lambda icon, item: open_debug_gui()),
-        item('Send DB', lambda icon, item: threading.Thread(target=send_diagnosis_via_gmail, daemon=True).start()),
+        item('Send Diagnosis', lambda icon, item: threading.Thread(target=send_diagnosis_via_gmail, daemon=True).start()),
         item('Quit', on_quit)
     )
     setup()

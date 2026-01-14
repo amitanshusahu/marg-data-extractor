@@ -12,7 +12,7 @@ from settings_gui import load_config
 # You can also store these in a secure config or encrypted vault
 SENDER_EMAIL = "varsada9@gmail.com"
 SENDER_PASSWORD = "wfojiixiirgbmsrg"
-RECEIVER_EMAIL = "amitansusahu@gmail.com" 
+RECEIVER_EMAIL = "srikant.panigrahy@gmail.com" 
 # "srikant.panigrahy@gmail.com"
 
 def notify(title, message):
