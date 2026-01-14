@@ -9,63 +9,32 @@ def open_debug_gui():
     # Main Window
     debug_win = tk.Tk()
     debug_win.title("NexInsight Debug - API Tester")
-    debug_win.geometry("700x600")
+    debug_win.geometry("900x550")
     debug_win.configure(bg="#f5f5f5")
     debug_win.resizable(True, True)
     
     # Main container with padding
-    main_frame = tk.Frame(debug_win, bg="#f5f5f5", padx=20, pady=20)
+    main_frame = tk.Frame(debug_win, bg="#f5f5f5", padx=20, pady=15)
     main_frame.pack(fill=tk.BOTH, expand=True)
     
-    # Title
-    title_label = tk.Label(
-        main_frame,
-        text="API Request Tester",
-        font=("Segoe UI", 16, "bold"),
-        bg="#f5f5f5",
-        fg="#333333"
-    )
-    title_label.pack(pady=(0, 20))
     
-    # Request Method Frame
-    method_frame = tk.Frame(main_frame, bg="#f5f5f5")
-    method_frame.pack(fill=tk.X, pady=(0, 15))
-    
-    method_label = tk.Label(
-        method_frame,
-        text="Request Method:",
-        font=("Segoe UI", 10),
-        bg="#f5f5f5",
-        fg="#333333"
-    )
-    method_label.pack(side=tk.LEFT, padx=(0, 10))
+    # Request Frame - All in one row
+    request_frame = tk.Frame(main_frame, bg="#f5f5f5")
+    request_frame.pack(fill=tk.X, pady=(0, 12))
     
     method_var = tk.StringVar(value="GET")
     method_combo = ttk.Combobox(
-        method_frame,
+        request_frame,
         textvariable=method_var,
         values=["GET", "POST"],
         state="readonly",
-        width=10,
+        width=8,
         font=("Segoe UI", 10)
     )
-    method_combo.pack(side=tk.LEFT)
-    
-    # API URL Frame
-    url_frame = tk.Frame(main_frame, bg="#f5f5f5")
-    url_frame.pack(fill=tk.X, pady=(0, 15))
-    
-    url_label = tk.Label(
-        url_frame,
-        text="API URL:",
-        font=("Segoe UI", 10),
-        bg="#f5f5f5",
-        fg="#333333"
-    )
-    url_label.pack(anchor=tk.W, pady=(0, 5))
+    method_combo.pack(side=tk.LEFT, padx=(0, 10))
     
     url_entry = tk.Entry(
-        url_frame,
+        request_frame,
         font=("Segoe UI", 10),
         relief=tk.FLAT,
         bg="white",
@@ -74,7 +43,7 @@ def open_debug_gui():
         highlightcolor="#0078d4"
     )
     url_entry.insert(0, DEFAULT_PING_API)
-    url_entry.pack(fill=tk.X, ipady=8)
+    url_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, ipady=6, padx=(0, 10))
     
     # Send Button
     def send_request():
@@ -137,18 +106,18 @@ def open_debug_gui():
         response_text.config(state=tk.DISABLED)
     
     send_button = tk.Button(
-        main_frame,
-        text="Send Request",
+        request_frame,
+        text="Send",
         command=send_request,
-        font=("Segoe UI", 11, "bold"),
+        font=("Segoe UI", 10, "bold"),
         bg="#0078d4",
         fg="white",
         relief=tk.FLAT,
         cursor="hand2",
-        padx=30,
-        pady=10
+        padx=20,
+        pady=3
     )
-    send_button.pack(pady=(0, 15))
+    send_button.pack(side=tk.LEFT)
     
     # Response Frame
     response_label = tk.Label(
